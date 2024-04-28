@@ -14,9 +14,11 @@ import {
 
 export type UseAnimationValue = 0 | 1;
 
-export type UseNativeAnimationProps = Partial<
+export type UseNativeAnimationOutputs = Partial<
   Record<NativeAnimationType, NativeAnimationRange>
-> & {
+>;
+
+export type UseNativeAnimationProps = UseNativeAnimationOutputs & {
   initial: UseAnimationValue;
 };
 
