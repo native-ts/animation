@@ -1,0 +1,38 @@
+{
+  "name": "@native-ts/animation",
+  "version": "0.0.1",
+  "description": "Simple animation with React Native Animated",
+  "keywords": [
+    "react native",
+    "animated",
+    "animation",
+    "simple animation",
+    "react native animation",
+    "react native animated"
+  ],
+  "repository": "git@github.com:native-ts/animation.git",
+  "author": "ngvcanh<ngvcanh2014@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts"
+  ],
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-native": "0.73.7"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-native": "0.73.7"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.6",
+    "typescript": "^5.4.5"
+  }
+}
