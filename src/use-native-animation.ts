@@ -1,26 +1,35 @@
-import React, {useMemo, useRef} from 'react';
+import {useMemo, useRef} from 'react';
+import {Animated, Easing, EasingFunction} from 'react-native';
 import {
-  Animated,
-  Easing,
-  EasingFunction,
-  ImageStyle,
-  TextStyle,
-  ViewStyle,
-} from 'react-native';
-import {
+  DefaultStyle,
+  NativeAnimationOutputs,
   NativeAnimationRange,
   NativeAnimationType,
+  NativeAnimationValue,
 } from './types';
 
-export type UseAnimationValue = 0 | 1;
-
-export type UseNativeAnimationOutputs = Partial<
-  Record<NativeAnimationType, NativeAnimationRange>
->;
-
-export type UseNativeAnimationProps = UseNativeAnimationOutputs & {
-  initial: UseAnimationValue;
+export type UseNativeAnimationProps = NativeAnimationOutputs & {
+  initial: NativeAnimationValue;
 };
+
+const assignStyle = (
+  acc: DefaultStyle,
+  style: Animated.AnimatedInterpolation<string | number>,
+) => {
+  if (style.hasOwnProperty('opacity')) {
+    acc = {...acc, ...style};
+    return acc;
+  }
+
+  if (!acc.transform) {
+    acc.transform = [];
+  }
+
+  (acc.transform as Array<any>).push(style);
+  return acc;
+};
+
+export const NATIVE_ANIMATION_DEFAULT_DURATION = 150;
 
 export function useNativeValue(defaultValue = 0) {
   const animated = useRef(new Animated.Value(defaultValue));
@@ -66,8 +75,8 @@ export function useNativeValue(defaultValue = 0) {
     composite.current && composite.current.start(callback);
 
   const timing = (
-    value: UseAnimationValue,
-    duration = 200,
+    value: NativeAnimationValue,
+    duration = NATIVE_ANIMATION_DEFAULT_DURATION,
     easing: EasingFunction = Easing.linear,
     callback?: Animated.EndCallback,
   ) => {
@@ -118,27 +127,30 @@ export function useNativeAnimation(props?: UseNativeAnimationProps) {
   const styles = useMemo(() => {
     const result = Object.keys(rest).reduce((acc, type) => {
       const range = rest[type as keyof typeof rest] as NativeAnimationRange;
-      const anim = animation[type as NativeAnimationType](range);
+      const fnAnim = animation[type as NativeAnimationType];
 
-      if (anim.hasOwnProperty('opacity')) {
-        acc = {...acc, ...anim};
-      } else {
-        if (!acc.transform) {
-          acc.transform = [];
+      if (fnAnim === undefined) {
+        const styleFn = shared[type as keyof typeof shared];
+
+        if (typeof styleFn !== 'function') {
+          return acc;
         }
 
-        (acc.transform as Array<any>).push(anim);
+        return assignStyle(acc, styleFn(range as any) as any);
+      } else {
+        const anim = fnAnim(range) as Animated.AnimatedInterpolation<
+          string | number
+        >;
+
+        return assignStyle(acc, anim);
       }
-      console.log(anim);
-      return acc;
-    }, {} as ViewStyle | ImageStyle | TextStyle);
+    }, {} as DefaultStyle);
 
     return result;
-  }, [rest, animation]);
+  }, [rest, animation, shared]);
 
   return {
     ...shared,
-    ...animation,
     styles,
   };
 }

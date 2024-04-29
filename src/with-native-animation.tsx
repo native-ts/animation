@@ -1,49 +1,49 @@
-import React, {ComponentType, Ref, forwardRef, useMemo} from 'react';
-import {PressableStateCallbackType, StyleSheet} from 'react-native';
-import {NativeAnimationRange} from './types';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {ComponentType, Ref, forwardRef, useEffect, useMemo} from 'react';
+import {Animated, PressableStateCallbackType, StyleSheet} from 'react-native';
 import {
-  UseAnimationValue,
-  UseNativeAnimationOutputs,
+  NativeAnimationOutputs,
+  NativeAnimationProperty,
+  NativeAnimationRange,
+  NativeAnimationValue
+} from './types';
+import {
+  NATIVE_ANIMATION_DEFAULT_DURATION,
   useNativeAnimation,
 } from './use-native-animation';
 
-export interface AnimationProperty {
-  opacity?: number;
-  scale?: number;
-  scaleX?: number;
-  scaleY?: number;
-  translate?: number;
-  translateX?: number;
-  translateY?: number;
-}
-
-type FromToType<Props = {}, Anim extends AnimationProperty = {}> = Props & {
-  from: {
-    [K in keyof Anim]: number;
-  };
-  to: {
-    [K in keyof Anim]: number;
+export type PropsWithNativeAnimation<
+  Props = {},
+  Anim extends NativeAnimationProperty = {},
+> = (Props extends {style?: any} ? Props : {style?: any} & Props) & {
+  nativeAnimation?: {
+    from?: {
+      [K in keyof Anim]: number;
+    };
+    to?: {
+      [K in keyof Anim]: number;
+    };
+    initial?: NativeAnimationValue;
+    auto?: boolean;
+    loop?: boolean;
+    back?: boolean;
+    duration?: number;
   };
 };
 
-export type PropsWithAnimation<
-  Props = {},
-  Anim extends AnimationProperty = {},
-> = (Props extends {style?: any} ? Props : {style?: any}) &
-  FromToType<Props, Anim> & {
-    initial?: UseAnimationValue;
-  };
-
-export function withAnimation<Props = {}, RefElement = unknown>(
+export function withNativeAnimation<Props = {}, RefElement = unknown>(
   Component: ComponentType<Props>,
 ) {
-  return forwardRef(function WithAnimation<Anim extends AnimationProperty = {}>(
-    props: PropsWithAnimation<Props, Anim>,
-    ref: Ref<RefElement>,
-  ) {
-    const {from = {}, to = {}, initial = 0, style: propStyle, ...rest} = props;
+  const AnimatedComponent = Animated.createAnimatedComponent(Component);
+
+  return forwardRef(function WithNativeAnimation<
+    Anim extends NativeAnimationProperty = {},
+  >(props: PropsWithNativeAnimation<Props, Anim>, ref: Ref<RefElement>) {
+    const {style: propStyle, nativeAnimation = {}, ...rest} = props;
 
     const outputs = useMemo(() => {
+      const {from = {}, to = {}} = nativeAnimation;
+
       const keysFrom = Object.keys(from);
       const keysTo = Object.keys(to);
 
@@ -65,13 +65,51 @@ export function withAnimation<Props = {}, RefElement = unknown>(
         ] as NativeAnimationRange;
 
         return acc;
-      }, {} as UseNativeAnimationOutputs);
-    }, [from, to]);
+      }, {} as NativeAnimationOutputs);
+    }, [nativeAnimation]);
 
     const shared = useNativeAnimation({
-      initial,
+      initial: nativeAnimation.initial ?? 0,
       ...outputs,
     });
+
+    const play = () => {
+      const {
+        initial = 0,
+        duration = NATIVE_ANIMATION_DEFAULT_DURATION,
+        back,
+        loop,
+      } = nativeAnimation;
+
+      shared.value.setValue(initial);
+
+      const nativeDuration =
+        duration <= 0 ? NATIVE_ANIMATION_DEFAULT_DURATION : duration;
+      const value = Math.abs(initial - 1) as NativeAnimationValue;
+
+      shared.timing(value, nativeDuration);
+      let loopDuration = nativeDuration;
+
+      if (back) {
+        setTimeout(
+          () => shared.timing(initial, nativeDuration),
+          nativeDuration,
+        );
+        loopDuration += nativeDuration;
+      }
+
+      if (loop) {
+        setTimeout(() => play(), loopDuration);
+      }
+    };
+
+    useEffect(() => {
+      if (!nativeAnimation.auto) {
+        return;
+      }
+
+      play();
+    }, []);
 
     const style = useMemo(() => {
       if (typeof propStyle === 'function') {
@@ -82,10 +120,9 @@ export function withAnimation<Props = {}, RefElement = unknown>(
           ];
         };
       }
-
       return [StyleSheet.flatten(propStyle), StyleSheet.flatten(shared.styles)];
     }, [shared, propStyle]);
 
-    return <Component {...(rest as Props)} ref={ref} style={style} />;
+    return <AnimatedComponent {...(rest as any)} ref={ref} style={style} />;
   });
 }
