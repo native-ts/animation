@@ -1,35 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {ComponentType, Ref, forwardRef, useEffect, useMemo} from 'react';
-import {Animated, PressableStateCallbackType, StyleSheet} from 'react-native';
-import {
-  NativeAnimationOutputs,
-  NativeAnimationProperty,
-  NativeAnimationRange,
-  NativeAnimationValue
-} from './types';
+import React, {
+  ComponentType,
+  Ref,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import {
   NATIVE_ANIMATION_DEFAULT_DURATION,
   useNativeAnimation,
 } from './use-native-animation';
-
-export type PropsWithNativeAnimation<
-  Props = {},
-  Anim extends NativeAnimationProperty = {},
-> = (Props extends {style?: any} ? Props : {style?: any} & Props) & {
-  nativeAnimation?: {
-    from?: {
-      [K in keyof Anim]: number;
-    };
-    to?: {
-      [K in keyof Anim]: number;
-    };
-    initial?: NativeAnimationValue;
-    auto?: boolean;
-    loop?: boolean;
-    back?: boolean;
-    duration?: number;
-  };
-};
+import {
+  NativeAnimationOutputs,
+  NativeAnimationProperty,
+  NativeAnimationRange,
+  NativeAnimationValue,
+  PropsWithNativeAnimation,
+} from './types';
+import {Animated, PressableStateCallbackType, StyleSheet} from 'react-native';
 
 export function withNativeAnimation<Props = {}, RefElement = unknown>(
   Component: ComponentType<Props>,
@@ -39,7 +28,12 @@ export function withNativeAnimation<Props = {}, RefElement = unknown>(
   return forwardRef(function WithNativeAnimation<
     Anim extends NativeAnimationProperty = {},
   >(props: PropsWithNativeAnimation<Props, Anim>, ref: Ref<RefElement>) {
-    const {style: propStyle, nativeAnimation = {}, ...rest} = props;
+    const {
+      style: propStyle,
+      nativeAnimation = {},
+      animationRef,
+      ...rest
+    } = props;
 
     const outputs = useMemo(() => {
       const {from = {}, to = {}} = nativeAnimation;
@@ -102,6 +96,11 @@ export function withNativeAnimation<Props = {}, RefElement = unknown>(
         setTimeout(() => play(), loopDuration);
       }
     };
+
+    useImperativeHandle(animationRef, () => ({
+      ...shared,
+      play,
+    }));
 
     useEffect(() => {
       if (!nativeAnimation.auto) {

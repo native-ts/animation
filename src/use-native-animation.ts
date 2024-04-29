@@ -1,16 +1,18 @@
 import {useMemo, useRef} from 'react';
-import {Animated, Easing, EasingFunction} from 'react-native';
+import {
+  Animated,
+  Easing,
+  EasingFunction,
+} from 'react-native';
 import {
   DefaultStyle,
-  NativeAnimationOutputs,
   NativeAnimationRange,
   NativeAnimationType,
   NativeAnimationValue,
+  UseNativeAnimationProps,
+  UseNativeAnimationReturn,
+  UseNativeValueReturn,
 } from './types';
-
-export type UseNativeAnimationProps = NativeAnimationOutputs & {
-  initial: NativeAnimationValue;
-};
 
 const assignStyle = (
   acc: DefaultStyle,
@@ -31,7 +33,7 @@ const assignStyle = (
 
 export const NATIVE_ANIMATION_DEFAULT_DURATION = 150;
 
-export function useNativeValue(defaultValue = 0) {
+export function useNativeValue(defaultValue = 0): UseNativeValueReturn {
   const animated = useRef(new Animated.Value(defaultValue));
   const composite = useRef<Animated.CompositeAnimation>();
 
@@ -106,7 +108,9 @@ export function useNativeValue(defaultValue = 0) {
   };
 }
 
-export function useNativeAnimation(props?: UseNativeAnimationProps) {
+export function useNativeAnimation(
+  props?: UseNativeAnimationProps,
+): UseNativeAnimationReturn {
   const {initial = 0, ...rest} = props || {};
   const shared = useNativeValue(initial);
 
