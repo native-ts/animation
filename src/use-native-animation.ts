@@ -32,6 +32,7 @@ const assignStyle = (
 };
 
 export const NATIVE_ANIMATION_DEFAULT_DURATION = 150;
+export const NATIVE_ANIMATION_DEFAULT_DELAY = 0;
 
 export function useNativeValue(defaultValue = 0): UseNativeValueReturn {
   const animated = useRef(new Animated.Value(defaultValue));
@@ -79,6 +80,7 @@ export function useNativeValue(defaultValue = 0): UseNativeValueReturn {
   const timing = (
     value: NativeAnimationValue,
     duration = NATIVE_ANIMATION_DEFAULT_DURATION,
+    delay = NATIVE_ANIMATION_DEFAULT_DELAY,
     easing: EasingFunction = Easing.linear,
     callback?: Animated.EndCallback,
   ) => {
@@ -88,6 +90,7 @@ export function useNativeValue(defaultValue = 0): UseNativeValueReturn {
       duration,
       useNativeDriver: true,
       easing,
+      delay,
     });
     start(callback);
   };

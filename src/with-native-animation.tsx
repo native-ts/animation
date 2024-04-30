@@ -8,6 +8,7 @@ import React, {
   useMemo,
 } from 'react';
 import {
+  NATIVE_ANIMATION_DEFAULT_DELAY,
   NATIVE_ANIMATION_DEFAULT_DURATION,
   useNativeAnimation,
 } from './use-native-animation';
@@ -73,6 +74,7 @@ export function withNativeAnimation<Props = {}, RefElement = unknown>(
         duration = NATIVE_ANIMATION_DEFAULT_DURATION,
         back,
         loop,
+        delay = NATIVE_ANIMATION_DEFAULT_DELAY,
       } = nativeAnimation;
 
       shared.value.setValue(initial);
@@ -86,7 +88,7 @@ export function withNativeAnimation<Props = {}, RefElement = unknown>(
 
       if (back) {
         setTimeout(
-          () => shared.timing(initial, nativeDuration),
+          () => shared.timing(initial, nativeDuration, delay),
           nativeDuration,
         );
         loopDuration += nativeDuration;

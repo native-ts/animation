@@ -70,6 +70,7 @@ export interface UseNativeValueReturn {
   timing: (
     value: NativeAnimationValue,
     duration?: number,
+    delay?: number,
     easing?: EasingFunction,
     callback?: Animated.EndCallback,
   ) => void;
@@ -99,6 +100,7 @@ export type PropsWithNativeAnimation<
     loop?: boolean;
     back?: boolean;
     duration?: number;
+    delay?: number;
   };
   animationRef?: Ref<NativeAnimationRef>;
 };

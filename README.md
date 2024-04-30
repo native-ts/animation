@@ -111,7 +111,7 @@ export interface UseNativeValueReturn {
   translateY: NativeAnimationMakeProps<'translateY'>;
   start(callback?: Animated.EndCallback): void;
   stop(): void;
-  timing: (value: NativeAnimationValue, duration?: number, easing?: EasingFunction, callback?: Animated.EndCallback) => void;
+  timing: (value: NativeAnimationValue, duration?: number, delay?: number, easing?: EasingFunction, callback?: Animated.EndCallback) => void;
 }
 ```
 
@@ -155,6 +155,7 @@ export type PropsWithNativeAnimation<
     loop?: boolean;
     back?: boolean;
     duration?: number;
+    delay?: number;
   };
   animationRef?: Ref<NativeAnimationRef>;
 };
