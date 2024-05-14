@@ -1,3 +1,23 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json"
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "allowImportingTsExtensions": null,
+    "outDir": "./libs",
+    "declaration": true,
+    "declarationDir": "./libs"
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "android",
+    "ios",
+    "__tests__",
+    "App.tsx"
+  ]
 }

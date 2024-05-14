@@ -1,0 +1,9 @@
+node_modules
+src
+__tests__
+.bundle
+.yarn
+yarn-error.log
+yarn.lock
+android
+ios

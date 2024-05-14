@@ -1,79 +1,183 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Native Animation
 
-# Getting Started
+This package is simple animation for React Native, only using React Native Animated to make animation.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+**[Try with Expo](https://snack.expo.dev/@ngvcanh/native-ts-animation)**
 
-## Step 1: Start the Metro Server
+## Installation
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
-
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
+```
+npm i --save @native-ts/animation
 ```
 
-## Step 2: Start your Application
+OR
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```
+yarn add @native-ts/animation
 ```
 
-### For iOS
+## Using
 
-```bash
-# using npm
-npm run ios
+### Using with hook
 
-# OR using Yarn
-yarn ios
+```tsx
+import React from 'react';
+import {Animated, SafeAreaView, ScrollView, Text, View} from 'react-native';
+import {useNativeAnimation} from '@native-ts/animation';
+
+const AnimatedText = Animated.createAnimatedComponent(Text);
+
+export default function App() {
+  const {styles, timing} = useNativeAnimation({
+    initial: 0,
+    scale: [0.8, 1],
+  });
+
+  useEffect(() => {
+    timing(1);
+  }, []);
+
+  return (
+    <SafeAreaView>
+      <ScrollView>
+        <View
+          style={{
+            marginTop: 40,
+            paddingHorizontal: 20,
+          }}
+        >
+          <AnimatedText style={styles}>Animated</AnimatedText>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+### Using with HOC
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+```tsx
+import React from 'react';
+import {SafeAreaView, ScrollView, Text, View} from 'react-native';
+import {withNativeAnimation} from '@native-ts/animation';
 
-## Step 3: Modifying your App
+const AnimatedText = withNativeAnimation(Text);
 
-Now that you have successfully run the app, let's modify it.
+export default function App() {
+  return (
+    <SafeAreaView>
+      <ScrollView>
+        <View
+          style={{
+            marginTop: 40,
+            paddingHorizontal: 20,
+          }}
+        >
+          <AnimatedText
+            nativeAnimation={{
+              from: {scale: 0.8},
+              to: {scale: 1},
+              auto: true,
+              loop: true,
+              back: true,
+              duration: 1000,
+            }}
+          >Animated</AnimatedText>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+```
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+### useNativeShared
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+`useNativeShared` is a hook that creates a value with the initial value being the value passed into the hook.
 
-## Congratulations! :tada:
+The initial value can only be `0` or `1`.
 
-You've successfully run and modified your React Native App. :partying_face:
+This hook will return an object of type `UseNativeSharedReturn`.
 
-### Now what?
+```ts
+export interface UseNativeSharedReturn {
+  value: Animated.Value;
+  interpolate: NativeAnimationInterpolate;
+  start(callback?: Animated.EndCallback): void;
+  stop(): void;
+  timing: (value: NativeAnimationValue, duration?: number, delay?: number, easing?: EasingFunction, callback?: Animated.EndCallback) => void;
+}
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+- `value`: Value created from `Animated.Value`;
+- `interpolate`: is customized from `value.interpolate` but only accepts `output` parameters.
+- `start`: This function initiates a `timing` function call. It will call the stop function before it starts calling the `timing` function.
+- `stop`: This function stops calling the `timing` function.
+- `timing`: This function customizes the `Animated.timing` function;
 
-# Troubleshooting
+### useNativeAnimation
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+This `useNativeAnimation` will use the `useNativeShared` hook, then create a styles object with the Animated.Value values of the StyleSheet property declared in the passed props.
 
-# Learn More
+Its return value includes the entirety of `useNativeShared` and the generated `styles` object.
 
-To learn more about React Native, take a look at the following resources:
+```ts
+export interface UseNativeAnimationReturn extends UseNativeSharedReturn {
+  styles: DefaultStyle;
+}
+```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+### withNativeAnimation
+
+This is a HOC that takes as input a React Component and will create an Animated Component using `useNativeAnimation` to create animations and manage them through 2 new props, `nativeAnimation` and `animationRef`.
+
+```ts
+export type PropsWithNativeAnimation<
+  Props = {},
+  Anim extends NativeAnimationProperty = {},
+> = (Props extends {style?: any} ? Props : {style?: any} & Props) & {
+  nativeAnimation?: {
+    from?: {
+      [K in keyof Anim]: number;
+    };
+    to?: {
+      [K in keyof Anim]: number;
+    };
+    initial?: NativeAnimationValue;
+    auto?: boolean;
+    loop?: boolean;
+    back?: boolean;
+    duration?: number;
+    delay?: number;
+    easing?: EasingFunction;
+  };
+  animationRef?: Ref<NativeAnimationRef>;
+};
+
+export interface NativeAnimationProperty {
+  opacity?: number;
+  scale?: number;
+  scaleX?: number;
+  scaleY?: number;
+  translate?: number;
+  translateX?: number;
+  translateY?: number;
+}
+
+export interface NativeAnimationRef extends UseNativeAnimationReturn {
+  play(): void;
+}
+```
+
+## Next tasks
+
+- [ ] Support more than animation functions of `react-native`
+- [ ] Support more than breakpoints for animation
+- [ ] Component: Ringing
+- [ ] Component: ScrollList
+- [ ] Component: ScrollPicker
+- [ ] Component: MonthPicker
+- [ ] Component: YearPicker
+- [ ] Component: DatePicker
+- [ ] Component: DatetimePicker
+- [ ] Component: TimePicker
+- [ ] Component: Count

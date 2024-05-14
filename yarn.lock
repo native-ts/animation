@@ -2071,6 +2071,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@native-ts/animation@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@native-ts/animation@workspace:."
+  dependencies:
+    "@babel/core": ^7.20.0
+    "@babel/preset-env": ^7.20.0
+    "@babel/runtime": ^7.20.0
+    "@react-native/babel-preset": 0.73.21
+    "@react-native/eslint-config": 0.73.2
+    "@react-native/metro-config": 0.73.5
+    "@react-native/typescript-config": 0.73.1
+    "@types/react": ^18.2.6
+    "@types/react-test-renderer": ^18.0.0
+    babel-jest: ^29.6.3
+    eslint: ^8.19.0
+    jest: ^29.6.3
+    prettier: 2.8.8
+    react: 18.2.0
+    react-native: 0.73.7
+    react-test-renderer: 18.2.0
+    typescript: 5.0.4
+  peerDependencies:
+    react: ^18.2.0
+    react-native: ^0.73.7
+  languageName: unknown
+  linkType: soft
+
 "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1":
   version: 5.1.1-v1
   resolution: "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1"
@@ -7120,30 +7147,6 @@ __metadata:
   checksum: aa92de608021b242401676e35cfa5aa42dd70cbdc082b916da7fb925c542173e36bce97ea3e804923fe92c0ad991434e4a38327e15a1b5b5f945d66df615ae6d
   languageName: node
   linkType: hard
-
-"nativetsanimation@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "nativetsanimation@workspace:."
-  dependencies:
-    "@babel/core": ^7.20.0
-    "@babel/preset-env": ^7.20.0
-    "@babel/runtime": ^7.20.0
-    "@react-native/babel-preset": 0.73.21
-    "@react-native/eslint-config": 0.73.2
-    "@react-native/metro-config": 0.73.5
-    "@react-native/typescript-config": 0.73.1
-    "@types/react": ^18.2.6
-    "@types/react-test-renderer": ^18.0.0
-    babel-jest: ^29.6.3
-    eslint: ^8.19.0
-    jest: ^29.6.3
-    prettier: 2.8.8
-    react: 18.2.0
-    react-native: 0.73.7
-    react-test-renderer: 18.2.0
-    typescript: 5.0.4
-  languageName: unknown
-  linkType: soft
 
 "natural-compare-lite@npm:^1.4.0":
   version: 1.4.0
