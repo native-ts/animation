@@ -1,9 +1,9 @@
 {
   "name": "@native-ts/animation",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Simple animation with React Native Animated",
-  "main": "libs/index.js",
-  "types": "libs/index.d.ts",
+  "main": "./libs/index.js",
+  "types": "./libs/index.d.ts",
   "keywords": [
     "react native",
     "animated",

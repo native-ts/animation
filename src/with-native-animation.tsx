@@ -21,7 +21,7 @@ import {
 import {useNativeAnimation} from './use-native-animation';
 import {Animated, PressableStateCallbackType, StyleSheet} from 'react-native';
 
-export function withNativeAimation<Props = {}, RefElement = unknown>(
+export function withNativeAnimation<Props = {}, RefElement = unknown>(
   Component: ComponentType<Props>,
 ) {
   const AnimatedComponent = Animated.createAnimatedComponent(Component);
